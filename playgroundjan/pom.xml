@@ -18,6 +18,55 @@
 	</properties>
 	<dependencies>
 
+		<dependency>
+			<groupId>org.apache.mxnet</groupId>
+			<artifactId>mxnet-full_2.11-osx-x86_64-cpu</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.mxnet</groupId>
+			 <artifactId>mxnet-java</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+        	<groupId>org.apache.mxnet</groupId>
+        	<artifactId>mxnet-model-server</artifactId>
+        	<version>1.0.6</version>
+    	</dependency>
+    	<dependency>
+        	<groupId>org.apache.mxnet</groupId>
+        	<artifactId>mxnet-model-server-api</artifactId>
+        	<version>1.0.6</version>
+    	</dependency>
+		<dependency>
+			<groupId>ai.djl.mxnet</groupId>
+			<artifactId>mxnet-model-zoo</artifactId>
+			<version>0.22.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-native-auto</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-model-zoo</artifactId>
+			<version>0.22.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-engine</artifactId>
+			<version>0.22.1</version>
+		</dependency>
+
+
 	    <dependency>
 	        <groupId>ai.djl.pytorch</groupId>
 	        <artifactId>pytorch-model-zoo</artifactId>
