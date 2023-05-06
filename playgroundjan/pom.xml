@@ -1,113 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.11</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.schmij03.sw8</groupId>
-	<artifactId>playground</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>playground</name>
-	<description>Demo project for Spring Boot</description>
-	<properties>
-		<java.version>17</java.version>
-	</properties>
-	<dependencies>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-		<dependency>
-			<groupId>org.apache.mxnet</groupId>
-			<artifactId>mxnet-full_2.11-osx-x86_64-cpu</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.mxnet</groupId>
-			 <artifactId>mxnet-java</artifactId>
-			<version>1.8.0</version>
-		</dependency>
-		<dependency>
-        	<groupId>org.apache.mxnet</groupId>
-        	<artifactId>mxnet-model-server</artifactId>
-        	<version>1.0.6</version>
-    	</dependency>
-    	<dependency>
-        	<groupId>org.apache.mxnet</groupId>
-        	<artifactId>mxnet-model-server-api</artifactId>
-        	<version>1.0.6</version>
-    	</dependency>
-		<dependency>
-			<groupId>ai.djl.mxnet</groupId>
-			<artifactId>mxnet-model-zoo</artifactId>
-			<version>0.22.1</version>
-		</dependency>
+  <groupId>com.schmij03.sw8.playground</groupId>
+  <artifactId>image-classifier</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
+  <name>image-classifier</name>
+  <url>http://maven.apache.org</url>
 
-		<dependency>
-			<groupId>ai.djl.pytorch</groupId>
-			<artifactId>pytorch-native-auto</artifactId>
-			<version>1.9.1</version>
-		</dependency>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>ai.djl.mxnet</groupId>
+      <artifactId>mxnet-model-zoo</artifactId>
+      <version>0.22.1</version>
+    </dependency>
 
-		<dependency>
-			<groupId>ai.djl.pytorch</groupId>
-			<artifactId>pytorch-model-zoo</artifactId>
-			<version>0.22.1</version>
-		</dependency>
+    <dependency>
+      <groupId>ai.djl.spring</groupId>
+      <artifactId>djl-spring-boot-starter-mxnet-auto</artifactId>
+      <version>0.20</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>2.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>api</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-engine</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-model-zoo</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>model-zoo</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>basicdataset</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>djl-zero</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>spring</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+  </dependencies>
 
-		<dependency>
-			<groupId>ai.djl.pytorch</groupId>
-			<artifactId>pytorch-engine</artifactId>
-			<version>0.22.1</version>
-		</dependency>
-
-
-	    <dependency>
-	        <groupId>ai.djl.pytorch</groupId>
-	        <artifactId>pytorch-model-zoo</artifactId>
-	        <version>0.22.1</version>
-	    </dependency>
-
-
-	    <dependency>
-	        <groupId>ai.djl</groupId>
-	        <artifactId>api</artifactId>
-	        <version>0.22.1</version>
-	    </dependency>
-        <dependency>
-	        <groupId>ai.djl</groupId>
-	        <artifactId>model-zoo</artifactId>
-	        <version>0.22.1</version>
-	    </dependency>
-        <dependency>
-	        <groupId>ai.djl</groupId>
-	        <artifactId>basicdataset</artifactId>
-	        <version>0.22.1</version>
-	    </dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
