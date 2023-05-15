@@ -33,7 +33,7 @@
         <div class="row justify-content-center mt-5">
             <div class="col-6">
                 <h1 class="text-center">BigGAN Image Generation</h1>
-
+                <p class = "text-center">Model for Project II in MDM</p>
                 <form>
                     <div class="mb-3">
                         <label for="classSelect" class="form-label">Choose a class:</label>
@@ -59,7 +59,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script >
-        $(document).ready(function () {
+  $(document).ready(function () {
     var imagesContainer = $("#images");
     var resetButton = $("#resetButton");
 
@@ -83,11 +83,11 @@
         // Disable the generate button
         $("#generateButton").prop("disabled", true);
 
-        // Show loading animation
-        imagesContainer.html('<div class="loading-animation"></div>');
-
         // Clear previously generated images
         imagesContainer.empty();
+
+        // Show loading animation
+        imagesContainer.html('<div class="loading-animation"></div>');
 
         // Send the generate request
         $.ajax({
@@ -99,6 +99,7 @@
             },
             success: function (data) {
                 // Generate successful, show the images
+                imagesContainer.empty();
                 for (var i = 0; i < data.length; i++) {
                     imagesContainer.append('<img src="' + data[i] + '" class="img-thumbnail mx-2" alt="Generated Image">');
                 }
@@ -117,10 +118,11 @@
     resetButton.click(function () {
         // Reset the form and clear the images
         imagesContainer.empty();
-        $("#classSelect").val("");
+        $("#classSelect").val(0);
         $("#numImages").val("1");
     });
 });
+
 
     </script>
 </body>
