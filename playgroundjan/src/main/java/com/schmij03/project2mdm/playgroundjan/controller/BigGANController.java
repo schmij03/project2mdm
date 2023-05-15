@@ -3,6 +3,7 @@ package com.schmij03.project2mdm.playgroundjan.controller;
 import com.schmij03.project2mdm.playgroundjan.model.BigGANService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,12 +15,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ai.djl.ModelException;
 import ai.djl.translate.TranslateException;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class BigGANController {
+
+    @Value("${image.directory}")
+    private String imageDirectory; // The directory where the generated images are stored
 
     private static final Logger logger = LoggerFactory.getLogger(BigGANController.class);
 
@@ -57,6 +64,31 @@ public class BigGANController {
         } catch (ModelException | TranslateException | IOException e) {
             logger.error("Error generating images: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteImages() {
+        File directory = new File(imageDirectory);
+        if (!directory.exists()) {
+            return new ResponseEntity<>("Image directory not found.", HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            Files.walk(Path.of(imageDirectory))
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> {
+                        try {
+                            Files.delete(file);
+                        } catch (IOException e) {
+                            logger.error("Error deleting image: {}", e.getMessage());
+                        }
+                    });
+
+            return new ResponseEntity<>("Images deleted successfully.", HttpStatus.OK);
+        } catch (IOException e) {
+            logger.error("Error deleting images: {}", e.getMessage());
+            return new ResponseEntity<>("Error deleting images.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
