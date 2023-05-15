@@ -1,65 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Detection</title>
+    <title>BigGAN Image Generation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 800px;
+        .loading-animation {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
             margin: 0 auto;
         }
-        #results {
-            margin-top: 1rem;
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Face Detection</h1>
-        <form id="upload-form" enctype="multipart/form-data">
-            <input type="file" id="file" name="file" accept="image/*" required>
-            <button type="submit">Detect Faces</button>
-        </form>
-        <div id="results"></div>
-    </div>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        const form = document.getElementById('upload-form');
-        const fileInput = document.getElementById('file');
-        const results = document.getElementById('results');
+        $(document).ready(function () {
+            var progressBar = $(".progress-bar");
+            var progressContainer = $(".progress");
+            var imagesContainer = $("#images");
+            var resetButton = $("#resetButton");
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-
-            try {
-                results.textContent = 'Detecting Faces...';
-
-                const response = await fetch('/api/facedetection/detect', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const detectedObjects = await response.json();
-                    results.innerHTML = `
-                        <h2>Detected Faces:</h2>
-                        <pre>${JSON.stringify(detectedObjects, null, 2)}</pre>
-                    `;
-                } else {
-                    results.textContent = 'Error: ' + response.statusText;
+            $.get("/classes", function (data) {
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        $('#classSelect').append($('<option>', {
+                            value: key,
+                            text: data[key]
+                        }));
+                    }
                 }
-            } catch (error) {
-                results.textContent = 'Error: ' + error.message;
-            }
+            });
+
+            $("#generateButton").click(function () {
+                var classId = $("#classSelect").val();
+                var numImages = $("#numImages").val();
+
+                // Disable the generate button and show the progress bar
+                $("#generateButton").prop("disabled", true);
+                progressContainer.show();
+
+                // Reset progress bar to 0
+                progressBar.css("width", "0%");
+                progressBar.attr("aria-valuenow", 0);
+
+                // Show loading animation
+                imagesContainer.html('<div class="loading-animation"></div>');
+
+                // Send the generate request
+                $.ajax({
+                    url: "/generate",
+                    method: "POST",
+                    data: {
+                        classId: classId,
+                        numImages: numImages
+                    },
+                    success: function (data) {
+                        // Generate successful, show the images
+                        imagesContainer.empty();
+                        for (var i = 0; i < data.length; i++) {
+                            imagesContainer.append('<img src="' + data[i] + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                        }
+                    },
+                    error: function () {
+                        // Error occurred, display error message
+                        imagesContainer.html('<div class="alert alert-danger" role="alert">Error generating images. Please try again.</div>');
+                    },
+                    complete: function () {
+                        // Enable the generate button and hide the progress bar
+                        $("#generateButton").prop("disabled", false);
+                        progressContainer.hide();
+                    },
+                    xhr: function () {
+                        // Track upload progress
+                        var xhr = new XMLHttpRequest();
+                        xhr.upload.onprogress = function (event) {
+                            if (event.lengthComputable) {
+                                var percent = Math.round((event.loaded / event.total) * 100);
+                                progressBar.css("width", percent + "%");
+                                progressBar.attr("aria-valuenow", percent);
+                            }
+                        };
+                        return xhr;
+                    }
+                });
+            });
+
+            resetButton.click(function () {
+                // Reset the form and clear the images
+                imagesContainer.empty();
+                $("#classSelect").val("");
+                $("#numImages").val("1");
+            });
         });
     </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-6">
+                <h1 class="text-center">BigGAN Image Generation</h1>
+
+                <form>
+                    <div class="mb-3">
+                        <label for="classSelect" class="form-label">Choose a class:</label>
+                        <select id="classSelect" class="form-select" name="classId"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="numImages" class="form-label">Number of Images to generate:</label>
+                        <input type="number" class="form-control" id="numImages" name="numImages" min="1" max="6"
+                            value="1" placeholder="Enter number of images">
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" id="generateButton">Generate</button>
+                        <button type="button" class="btn btn-secondary" id="resetButton">Reset</button>
+                    </div>
+                </form>
+
+                <div class="progress mt-3" style="display: none;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <div id="images" class="mt-3">
+                    <!-- Generated images will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
