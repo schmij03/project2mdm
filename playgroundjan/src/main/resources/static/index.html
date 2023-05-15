@@ -34,7 +34,6 @@
             <div class="col-6">
                 <h1 class="text-center">BigGAN Image Generation</h1>
                 <p class="text-center">Model for Project II in MDM</p>
-                <p class="text-center">Github Link: https://github.com/schmij03/project2mdm </p>
                 <form>
                     <div class="mb-3">
                         <label for="classSelect" class="form-label">Choose a class:</label>
@@ -47,7 +46,6 @@
                     </div>
                     <div class="text-center">
                         <button type="button" class="btn btn-primary" id="generateButton">Generate</button>
-                        <button type="button" class="btn btn-secondary" id="resetButton">Reset</button>
                     </div>
                 </form>
 
@@ -57,87 +55,65 @@
             </div>
         </div>
     </div>
-
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        var imagesContainer = $("#images");
-        var resetButton = $("#resetButton");
+    <script>
+        $(document).ready(function () {
+            var imagesContainer = $("#images");
 
-        $.get("/classes", function (data) {
-            if (typeof data === "object" && Object.keys(data).length > 0) {
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        $('#classSelect').append($('<option>', {
-                            value: key,
-                            text: data[key]
-                        }));
+            $.get("/classes", function (data) {
+                if (typeof data === "object" && Object.keys(data).length > 0) {
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            $('#classSelect').append($('<option>', {
+                                value: key,
+                                text: data[key]
+                            }));
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        $("#generateButton").click(function () {
-            var classId = $("#classSelect").val();
-            var numImages = $("#numImages").val();
+            $("#generateButton").click(function () {
+                var classId = $("#classSelect").val();
+                var numImages = $("#numImages").val();
 
-            // Disable the generate button
-            $("#generateButton").prop("disabled", true);
+                // Disable the generate button
+                $("#generateButton").prop("disabled", true);
 
-            // Clear previously generated images
-            imagesContainer.empty();
+                // Clear previously generated images
+                imagesContainer.empty();
 
-            // Show loading animation
-            imagesContainer.html('<div class="loading-animation"></div>');
+                // Show loading animation
+                imagesContainer.html('<div class="loading-animation"></div>');
 
-            // Send the generate request
-            $.ajax({
-                url: "/generate",
-                method: "POST",
-                data: {
-                    classId: classId,
-                    numImages: numImages
-                },
-                success: function (data) {
-                    // Generate successful, show the images
-                    imagesContainer.empty();
-                    for (var i = 0; i < data.length; i++) {
-                        var uniqueUrl = data[i] + '?' + new Date().getTime(); // Append a timestamp
-                        imagesContainer.append('<img src="' + uniqueUrl + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                // Send the generate request
+                $.ajax({
+                    url: "/generate",
+                    method: "POST",
+                    data: {
+                        classId: classId,
+                        numImages: numImages
+                    },
+                    success: function (data) {
+                        // Generate successful, show the images
+                        imagesContainer.empty();
+                        for (var i = 0; i < data.length; i++) {
+                            imagesContainer.append('<img src="' + data[i] + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                        }
+                    },
+                    error: function () {
+                        // Error occurred, display error message
+                        imagesContainer.html('<div class="alert alert-danger" role="alert">Error generating images. Please try again.</div>');
+                    },
+                    complete: function () {
+                        // Enable the generate button
+                        $("#generateButton").prop("disabled", false);
                     }
-                },
-                error: function () {
-                    // Error occurred, display error message
-                    imagesContainer.html('<div class="alert alert-danger" role="alert">Error generating images. Please try again.</div>');
-                },
-                complete: function () {
-                    // Enable the generate button
-                    $("#generateButton").prop("disabled", false);
-                }
+                });
             });
         });
+    </script>
 
-        resetButton.click(function () {
-            // Reset the form and clear the images
-            imagesContainer.empty();
-            $("#classSelect").val(0);
-            $("#numImages").val("1");
-
-            // Delete previously generated images
-            $.ajax({
-                url: "/delete",
-                method: "POST",
-                success: function () {
-                    console.log("Images deleted successfully.");
-                },
-                error: function () {
-                    console.log("Error deleting images.");
-                }
-            });
-        });
-    });
-</script>
 
 </body>
 
