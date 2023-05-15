@@ -1,16 +1,20 @@
+
 $(document).ready(function () {
     var progressBar = $(".progress-bar");
     var progressContainer = $(".progress");
     var imagesContainer = $("#images");
     var resetButton = $("#resetButton");
 
+    // Fetch the categories from the server
     $.get("/classes", function (data) {
-        for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-                $('#classSelect').append($('<option>', {
-                    value: key,
-                    text: data[key]
-                }));
+        if (typeof data === "object" && Object.keys(data).length > 0) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    $('#classSelect').append($('<option>', {
+                        value: key,
+                        text: data[key]
+                    }));
+                }
             }
         }
     });
@@ -76,3 +80,4 @@ $(document).ready(function () {
         $("#numImages").val("1");
     });
 });
+
