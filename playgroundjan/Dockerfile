@@ -6,7 +6,7 @@ FROM maven:3.8-openjdk-11-slim AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-
+EXPOSE 8081
 # Build a release artifact.
 RUN mvn package -DskipTests
 
@@ -15,7 +15,7 @@ RUN mvn package -DskipTests
 FROM adoptopenjdk:11-jre-hotspot
 
 # Copy the jar to the production image from the builder stage.
-COPY --from=build /app/target/BigGAN-ImageCreator-1.0-SNAPSHOT.jar /BigGAN-ImageCreator-1.0-SNAPSHOT.jar
+COPY --from=build /app/target/playgroundjan-1.0-SNAPSHOT.jar /playgroundjan-1.0-SNAPSHOT.jar
 
 # Run the web service on container startup.
-CMD ["java", "-jar", "/BigGAN-ImageCreator-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/playgroundjan-1.0-SNAPSHOT.jar"]
