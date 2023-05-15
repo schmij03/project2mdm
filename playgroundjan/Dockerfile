@@ -1,23 +1,21 @@
-# Start with a base image containing Java runtime
-FROM openjdk:11-jdk-slim
+# Use the official maven/Java 8 image to create a build artifact.
+# https://hub.docker.com/_/maven
+FROM maven:3.8-openjdk-11-slim AS build
 
-# Add Maintainer Info
-LABEL maintainer="schmij03@students.zhaw.ch"
+# Copy local code to the container image.
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Build a release artifact.
+RUN mvn package -DskipTests
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+# Use AdoptOpenJDK for base image.
+# It's important to use OpenJDK 8u191 or above that has container support enabled.
+FROM adoptopenjdk:11-jre-hotspot
 
-# The application's jar file
-ARG JAR_FILE=target/*.jar
+# Copy the jar to the production image from the builder stage.
+COPY --from=build /app/target/BigGAN-ImageCreator-1.0-SNAPSHOT.jar /BigGAN-ImageCreator-1.0-SNAPSHOT.jar
 
-# Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
-
-COPY target/my-app-1.0.0.jar /app.jar
-
-# Run the jar file 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
-
+# Run the web service on container startup.
+CMD ["java", "-jar", "/BigGAN-ImageCreator-1.0-SNAPSHOT.jar"]
