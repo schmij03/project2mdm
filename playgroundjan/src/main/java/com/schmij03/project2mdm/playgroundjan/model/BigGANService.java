@@ -40,7 +40,7 @@ public class BigGANService {
     }
 
     private List<String> saveImages(Image[] generatedImages) throws IOException {
-        String outputDir = "src/target/classes/static/images"; // Relative path to the output directory
+        String outputDir = "C:/Users/jansc/Desktop/MODEL_DEPLOYMENT/project2mdm/project2mdm/playgroundjan/target/classes/static/images"; // Relative path to the output directory
         Path outputPath = Paths.get(outputDir);
         Files.createDirectories(outputPath);
         List<String> imagePaths = new ArrayList<>();
