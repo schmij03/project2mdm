@@ -34,7 +34,7 @@
             <div class="col-6">
                 <h1 class="text-center">BigGAN Image Generation</h1>
                 <p class="text-center">Model for Project II in MDM</p>
-                <p class ="text-center">Github Link: https://github.com/schmij03/project2mdm </p>
+                <p class="text-center">Github Link: https://github.com/schmij03/project2mdm </p>
                 <form>
                     <div class="mb-3">
                         <label for="classSelect" class="form-label">Choose a class:</label>
@@ -62,7 +62,7 @@
         $(document).ready(function () {
             var imagesContainer = $("#images");
             var resetButton = $("#resetButton");
-    
+
             $.get("/classes", function (data) {
                 if (typeof data === "object" && Object.keys(data).length > 0) {
                     for (var key in data) {
@@ -75,20 +75,20 @@
                     }
                 }
             });
-    
+
             $("#generateButton").click(function () {
                 var classId = $("#classSelect").val();
                 var numImages = $("#numImages").val();
-    
+
                 // Disable the generate button
                 $("#generateButton").prop("disabled", true);
-    
+
                 // Clear previously generated images
                 imagesContainer.empty();
-    
+
                 // Show loading animation
                 imagesContainer.html('<div class="loading-animation"></div>');
-    
+
                 // Send the generate request
                 $.ajax({
                     url: "/generate",
@@ -101,7 +101,8 @@
                         // Generate successful, show the images
                         imagesContainer.empty();
                         for (var i = 0; i < data.length; i++) {
-                            imagesContainer.append('<img src="' + data[i] + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                            var cacheBustingUrl = data[i] + "?" + new Date().getTime();
+                            imagesContainer.append('<img src="' + cacheBustingUrl + '" class="img-thumbnail mx-2" alt="Generated Image">');
                         }
                     },
                     error: function () {
@@ -114,7 +115,8 @@
                     }
                 });
             });
-    
+
+
             resetButton.click(function () {
                 // Reset the form and clear the images
                 imagesContainer.empty();
@@ -123,7 +125,7 @@
             });
         });
     </script>
-    
+
 
 
 </body>
