@@ -26,35 +26,34 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.core.io.Resource;
 
-
 @Service
 public class BigGANService {
-    
-    
+
     private static final Logger logger = LoggerFactory.getLogger(BigGANService.class);
 
-    public List<String> generateAndSaveImages(int classId, int numImages) throws ModelException, TranslateException, IOException {
+    public List<String> generateAndSaveImages(int classId, int numImages)
+            throws ModelException, TranslateException, IOException {
         Image[] generatedImages = generate(classId, numImages);
         logger.info("Using PyTorch Engine. {} images generated.", generatedImages.length);
         return saveImages(generatedImages);
     }
 
     private List<String> saveImages(Image[] generatedImages) throws IOException {
-        String outputDir = "C:/Users/jansc/Desktop/MODEL_DEPLOYMENT/project2mdm/project2mdm/playgroundjan/target/classes/static/images"; // Relative path to the output directory
+        String outputDir = "/app/images"; // Absolute path to the output directory in the Docker container
         Path outputPath = Paths.get(outputDir);
         Files.createDirectories(outputPath);
         List<String> imagePaths = new ArrayList<>();
-    
+
         for (int i = 0; i < generatedImages.length; ++i) {
             Path imagePath = outputPath.resolve("image" + i + ".png");
             generatedImages[i].save(Files.newOutputStream(imagePath), "png");
-            imagePaths.add("/images/image" + i + ".png");
+            imagePaths.add("/images/image" + i + ".png"); // URL path
         }
         logger.info("Generated images have been saved in: {}", outputPath);
-    
+
         return imagePaths;
     }
-    
+
     public Image[] generate(int classId, int numImages) throws IOException, ModelException, TranslateException {
         Criteria<int[], Image[]> criteria = Criteria.builder()
                 .optApplication(Application.CV.IMAGE_GENERATION)
@@ -71,7 +70,7 @@ public class BigGANService {
         }
 
         try (ZooModel<int[], Image[]> model = criteria.loadModel();
-             Predictor<int[], Image[]> generator = model.newPredictor()) {
+                Predictor<int[], Image[]> generator = model.newPredictor()) {
             return generator.predict(input);
         }
     }
@@ -82,7 +81,7 @@ public class BigGANService {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader);
         Map<Integer, String> classes = new HashMap<>();
-    
+
         String line;
         while ((line = reader.readLine()) != null) {
             String[] parts = line.split(":");
@@ -93,8 +92,8 @@ public class BigGANService {
                 classes.put(index, className);
             }
         }
-    
+
         return classes;
     }
-    
+
 }
