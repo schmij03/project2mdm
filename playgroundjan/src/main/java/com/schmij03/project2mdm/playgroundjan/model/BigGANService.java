@@ -13,7 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
+import org.springframework.core.io.Resource;
 
 @Service
 public class BigGANService {
@@ -71,12 +74,14 @@ public class BigGANService {
     }
 
     public Map<Integer, String> loadClasses() throws IOException {
-        ClassPathResource resource = new ClassPathResource("static/imagenet1000.txt");
-        Scanner scanner = new Scanner(resource.getFile());
+        Resource resource = new ClassPathResource("static/imagenet1000.txt");
+        InputStream inputStream = resource.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
         Map<Integer, String> classes = new HashMap<>();
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
+    
+        String line;
+        while ((line = reader.readLine()) != null) {
             String[] parts = line.split(":");
             if (parts.length >= 2) {
                 String indexStr = parts[0].trim().replace("{", "");
@@ -85,7 +90,10 @@ public class BigGANService {
                 classes.put(index, className);
             }
         }
-
+    
+        reader.close();
+    
         return classes;
     }
+    
 }
