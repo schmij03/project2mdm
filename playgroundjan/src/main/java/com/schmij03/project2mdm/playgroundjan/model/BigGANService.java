@@ -31,26 +31,29 @@ public class BigGANService {
 
     private static final Logger logger = LoggerFactory.getLogger(BigGANService.class);
 
-    public List<String> generateAndSaveImages(int classId, int numImages) throws ModelException, TranslateException, IOException {
+    public List<String> generateAndSaveImages(int classId, int numImages)
+            throws ModelException, TranslateException, IOException {
         Image[] generatedImages = generate(classId, numImages);
         logger.info("Using PyTorch Engine. {} images generated.", generatedImages.length);
         return saveImages(generatedImages);
     }
 
     private List<String> saveImages(Image[] generatedImages) throws IOException {
-        Path outputPath = Paths.get(new ClassPathResource("static").getURI());
+        ClassPathResource resource = new ClassPathResource("static");
+        Path outputPath = Paths.get(resource.getURI());
         Files.createDirectories(outputPath);
         List<String> imagePaths = new ArrayList<>();
-
+    
         for (int i = 0; i < generatedImages.length; ++i) {
             Path imagePath = outputPath.resolve("image" + i + ".png");
             generatedImages[i].save(Files.newOutputStream(imagePath), "png");
             imagePaths.add("/image" + i + ".png");
         }
         logger.info("Generated images have been saved in: {}", outputPath);
-
+    
         return imagePaths;
     }
+    
 
     public Image[] generate(int classId, int numImages) throws IOException, ModelException, TranslateException {
         Criteria<int[], Image[]> criteria = Criteria.builder()
@@ -68,32 +71,27 @@ public class BigGANService {
         }
 
         try (ZooModel<int[], Image[]> model = criteria.loadModel();
-             Predictor<int[], Image[]> generator = model.newPredictor()) {
+                Predictor<int[], Image[]> generator = model.newPredictor()) {
             return generator.predict(input);
         }
     }
 
     public Map<Integer, String> loadClasses() throws IOException {
-        Resource resource = new ClassPathResource("static/imagenet1000.txt");
-        InputStream inputStream = resource.getInputStream();
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader reader = new BufferedReader(inputStreamReader);
         Map<Integer, String> classes = new HashMap<>();
-    
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(":");
-            if (parts.length >= 2) {
-                String indexStr = parts[0].trim().replace("{", "");
-                String className = parts[1].trim().replace("'", "");
-                int index = Integer.parseInt(indexStr);
-                classes.put(index, className);
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/imagenet1000.txt");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length >= 2) {
+                    String indexStr = parts[0].trim().replace("{", "");
+                    String className = parts[1].trim().replace("'", "");
+                    int index = Integer.parseInt(indexStr);
+                    classes.put(index, className);
+                }
             }
         }
-    
-        reader.close();
-    
         return classes;
     }
-    
+
 }
