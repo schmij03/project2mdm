@@ -101,10 +101,11 @@
                         // Generate successful, show the images
                         imagesContainer.empty();
                         for (var i = 0; i < data.length; i++) {
-                            var cacheBustingUrl = data[i] + "?" + new Date().getTime();
+                            var cacheBustingUrl = "/images" + data[i] + "?" + new Date().getTime();
                             imagesContainer.append('<img src="' + cacheBustingUrl + '" class="img-thumbnail mx-2" alt="Generated Image">');
                         }
                     },
+
                     error: function () {
                         // Error occurred, display error message
                         imagesContainer.html('<div class="alert alert-danger" role="alert">Error generating images. Please try again.</div>');

@@ -39,20 +39,20 @@ public class BigGANService {
     }
 
     private List<String> saveImages(Image[] generatedImages) throws IOException {
-        ClassPathResource resource = new ClassPathResource("static");
-        Path outputPath = Paths.get(resource.getURI());
+        Path outputPath = Paths.get("/app/images"); // Update the output directory path to "/app/images"
         Files.createDirectories(outputPath);
         List<String> imagePaths = new ArrayList<>();
     
         for (int i = 0; i < generatedImages.length; ++i) {
             Path imagePath = outputPath.resolve("image" + i + ".png");
             generatedImages[i].save(Files.newOutputStream(imagePath), "png");
-            imagePaths.add("/image" + i + ".png");
+            imagePaths.add("/images/image" + i + ".png"); // Update the image path to include the "images" directory
         }
         logger.info("Generated images have been saved in: {}", outputPath);
     
         return imagePaths;
     }
+    
     
 
     public Image[] generate(int classId, int numImages) throws IOException, ModelException, TranslateException {
