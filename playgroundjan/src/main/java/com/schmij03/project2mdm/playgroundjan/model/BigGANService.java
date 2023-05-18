@@ -37,22 +37,23 @@ public class BigGANService {
         logger.info("Using PyTorch Engine. {} images generated.", generatedImages.length);
         return saveImages(generatedImages);
     }
-
+    
     private List<String> saveImages(Image[] generatedImages) throws IOException {
-        String outputDir = "/app/images"; // Absolute path to the output directory in the Docker container
+        String outputDir = "src/main/resources/static/images"; // Relative path to the output directory
         Path outputPath = Paths.get(outputDir);
         Files.createDirectories(outputPath);
         List<String> imagePaths = new ArrayList<>();
-
+    
         for (int i = 0; i < generatedImages.length; ++i) {
             Path imagePath = outputPath.resolve("image" + i + ".png");
             generatedImages[i].save(Files.newOutputStream(imagePath), "png");
-            imagePaths.add("/images/image" + i + ".png"); // URL path
+            imagePaths.add("/images/image" + i + ".png");
         }
         logger.info("Generated images have been saved in: {}", outputPath);
-
+    
         return imagePaths;
     }
+    
 
     public Image[] generate(int classId, int numImages) throws IOException, ModelException, TranslateException {
         Criteria<int[], Image[]> criteria = Criteria.builder()
@@ -76,7 +77,7 @@ public class BigGANService {
     }
 
     public Map<Integer, String> loadClasses() throws IOException {
-        Resource resource = new ClassPathResource("static/imagenet1000.txt");
+        ClassPathResource resource = new ClassPathResource("static/imagenet1000.txt");
         InputStream inputStream = resource.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -95,5 +96,4 @@ public class BigGANService {
 
         return classes;
     }
-
 }

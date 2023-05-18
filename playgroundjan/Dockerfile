@@ -23,5 +23,8 @@ COPY --from=build /app/target/playgroundjan-1.0-SNAPSHOT.jar /playgroundjan-1.0-
 # Expose the port the app runs in
 EXPOSE 8081
 
+# Specify the volume for serving images
+VOLUME /app/images
+
 # Run the web service on container startup.
 CMD ["java", "-jar", "/playgroundjan-1.0-SNAPSHOT.jar"]

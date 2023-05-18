@@ -101,8 +101,11 @@
                         // Generate successful, show the images
                         imagesContainer.empty();
                         for (var i = 0; i < data.length; i++) {
-                            var cacheBustingUrl = data[i] + "?" + new Date().getTime();
-                            imagesContainer.append('<img src="' + cacheBustingUrl + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                            var img = $('<img class="img-thumbnail mx-2" alt="Generated Image">');
+                            // Assume data[i] contains the relative path from project's root directory.
+                            // Adjust this as per your server's response.
+                            img.attr('src', data[i]);
+                            imagesContainer.append(img);
                         }
                     },
                     error: function () {
@@ -124,6 +127,7 @@
                 $("#numImages").val("1");
             });
         });
+
     </script>
 
 
