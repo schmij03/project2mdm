@@ -10,50 +10,44 @@ import ai.djl.training.util.ProgressBar;
 import ai.djl.translate.TranslateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.core.io.Resource;
+import java.util.ArrayList;
+import java.util.Base64;
 
 @Service
 public class BigGANService {
 
     private static final Logger logger = LoggerFactory.getLogger(BigGANService.class);
 
-    public List<String> generateAndSaveImages(int classId, int numImages)
+    public ResponseEntity<List<String>> generateAndReturnImages(int classId, int numImages)
             throws ModelException, TranslateException, IOException {
         Image[] generatedImages = generate(classId, numImages);
         logger.info("Using PyTorch Engine. {} images generated.", generatedImages.length);
-        return saveImages(generatedImages);
+        return convertImagesToResponse(generatedImages);
     }
 
-    private List<String> saveImages(Image[] generatedImages) throws IOException {
-        Path outputPath = Paths.get("/app/images"); // Update the output directory path to "/app/images"
-        Files.createDirectories(outputPath);
-        List<String> imagePaths = new ArrayList<>();
-    
-        for (int i = 0; i < generatedImages.length; ++i) {
-            Path imagePath = outputPath.resolve("image" + i + ".png");
-            generatedImages[i].save(Files.newOutputStream(imagePath), "png");
-            imagePaths.add("/images/image" + i + ".png"); // Update the image path to include the "images" directory
+    private ResponseEntity<List<String>> convertImagesToResponse(Image[] generatedImages) throws IOException {
+        List<String> imageBlobs = new ArrayList<>();
+        for (Image image : generatedImages) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            image.save(outputStream, "png");
+            imageBlobs.add(Base64.getEncoder().encodeToString(outputStream.toByteArray()));
         }
-        logger.info("Generated images have been saved in: {}", outputPath);
-    
-        return imagePaths;
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(imageBlobs);
     }
-    
-    
 
     public Image[] generate(int classId, int numImages) throws IOException, ModelException, TranslateException {
         Criteria<int[], Image[]> criteria = Criteria.builder()
@@ -93,5 +87,4 @@ public class BigGANService {
         }
         return classes;
     }
-
 }

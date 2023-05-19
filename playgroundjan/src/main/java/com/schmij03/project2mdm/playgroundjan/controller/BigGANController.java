@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import ai.djl.ModelException;
 import ai.djl.translate.TranslateException;
 
@@ -20,7 +21,6 @@ import java.util.Map;
 
 @Controller
 public class BigGANController {
-
 
     private static final Logger logger = LoggerFactory.getLogger(BigGANController.class);
 
@@ -53,8 +53,7 @@ public class BigGANController {
     @ResponseBody
     public ResponseEntity<List<String>> generate(@RequestParam int classId, @RequestParam int numImages) {
         try {
-            List<String> imagePaths = bigGANService.generateAndSaveImages(classId, numImages);
-            return new ResponseEntity<>(imagePaths, HttpStatus.OK);
+            return bigGANService.generateAndReturnImages(classId, numImages);
         } catch (ModelException | TranslateException | IOException e) {
             logger.error("Error generating images: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

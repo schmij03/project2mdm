@@ -41,7 +41,7 @@
                         <select id="classSelect" class="form-select" name="classId"></select>
                     </div>
                     <div class="mb-3">
-                        <label for="numImages" class="form-label">Number of Images to generate:</label>
+                        <label for="numImages" class="form-label">Number of Images to generate (Max. 6):</label>
                         <input type="number" class="form-control" id="numImages" name="numImages" min="1" max="6"
                             value="1" placeholder="Enter number of images">
                     </div>
@@ -100,12 +100,14 @@
                     success: function (data) {
                         // Generate successful, show the images
                         imagesContainer.empty();
-                        for (var i = 0; i < data.length; i++) {
-                            var cacheBustingUrl = "/images" + data[i] + "?" + new Date().getTime();
-                            imagesContainer.append('<img src="' + cacheBustingUrl + '" class="img-thumbnail mx-2" alt="Generated Image">');
+                        for (var j = 0; j < data.length; j++) {
+                            var imageURL = "data:image/png;base64," + data[j];
+                            var imgElement = document.createElement("img");
+                            imgElement.src = imageURL;
+                            imgElement.classList.add("img-thumbnail", "mx-2");
+                            imagesContainer.append(imgElement);
                         }
                     },
-
                     error: function () {
                         // Error occurred, display error message
                         imagesContainer.html('<div class="alert alert-danger" role="alert">Error generating images. Please try again.</div>');
@@ -116,7 +118,6 @@
                     }
                 });
             });
-
 
             resetButton.click(function () {
                 // Reset the form and clear the images

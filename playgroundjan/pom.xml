@@ -107,16 +107,6 @@
     <plugin>
       <artifactId>maven-antrun-plugin</artifactId>
       <version>3.0.0</version>
-      <executions>
-        <execution>
-          <id>create-dirs</id>
-          <phase>process-resources</phase>
-          
-          <goals>
-            <goal>run</goal>
-          </goals>
-        </execution>
-      </executions>
     </plugin>
   </plugins>
 </build>
