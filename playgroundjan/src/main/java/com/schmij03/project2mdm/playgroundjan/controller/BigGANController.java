@@ -53,9 +53,10 @@ public class BigGANController {
     public ResponseEntity<List<String>> generate(@RequestParam int classId, @RequestParam int numImages) {
         try {
             return bigGANService.generateAndReturnImages(classId, numImages);
-        } catch (ModelException | TranslateException | IOException e) {
+        } catch (ModelException | TranslateException | IOException | IllegalArgumentException e) {
             logger.error("Error generating images: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

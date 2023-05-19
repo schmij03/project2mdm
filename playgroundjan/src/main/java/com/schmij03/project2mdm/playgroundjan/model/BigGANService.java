@@ -32,6 +32,11 @@ public class BigGANService {
 
     public ResponseEntity<List<String>> generateAndReturnImages(int classId, int numImages)
             throws ModelException, TranslateException, IOException {
+        // Ensure that no more than 6 images are requested.
+        if (numImages > 6) {
+            throw new IllegalArgumentException("Cannot generate more than 6 images at a time.");
+        }
+
         Image[] generatedImages = generate(classId, numImages);
         logger.info("Using PyTorch Engine. {} images generated.", generatedImages.length);
         return convertImagesToResponse(generatedImages);
